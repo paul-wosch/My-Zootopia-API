@@ -1,7 +1,10 @@
-"""Generate HTML file from JSON structured animal data for selected fields."""
-import json
+"""Generate HTML file from API Ninjas Animals API for selected fields."""
+import requests
+from dotenv import dotenv_values
 
-JSON_DATA = "animals_data.json"
+API_KEY = dotenv_values(".env").get("API_KEY", None)
+BASE_URL = "https://api.api-ninjas.com/v1/"
+HEADERS = {"X-Api-Key": API_KEY}
 TEMPLATE_FILE = "animals_template.html"
 NEW_FILE = "animals.html"
 PLACEHOLDER = "            __REPLACE_ANIMALS_INFO__"
@@ -16,10 +19,21 @@ SELECTED_FIELDS = {"diet": ("characteristics", "diet"),
                    }
 
 
-def load_data(file_path):
-    """Load a JSON file."""
-    with open(file_path, "r", encoding="utf-8") as handle:
-        return json.load(handle)
+def retrieve_data_from_api(endpoint, payload=None) -> requests.Response | None:
+    """Return response from REST API for given endpoint and payload."""
+    url = BASE_URL + endpoint
+    return requests.get(url, headers=HEADERS, params=payload)
+
+
+def get_animals(name: str) -> list[dict] | None:
+    """Return up to 10 animals matching the given name.
+
+    If no match is found the returned list will be empty.
+    Return none if there is a miss-configured API key.
+    """
+    endpoint = "animals"
+    payload = {"name": name}
+    return retrieve_data_from_api(endpoint, payload).json()
 
 
 def initialize_animal_obj():
@@ -142,10 +156,13 @@ def ask_for_skin_type(animals):
 
 def main():
     """Ask for skin filter and generate HTML file."""
-    animals_data = load_data(JSON_DATA)
+    # For now using the animal data for the key word 'Fox'
+    animal_name = "Fox"
+    animals_data = get_animals(animal_name)
     skin_type = ask_for_skin_type(animals_data)
     content = serialize_all_animals_to_html(animals_data, skin_type)
     write_html_file(TEMPLATE_FILE, NEW_FILE, content)
+    print("Website was successfully generated to the file animals.html.")
 
 
 if __name__ == "__main__":
