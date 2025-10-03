@@ -140,6 +140,18 @@ def get_skin_types(animals):
     return set(animal["characteristics"]["skin_type"] for animal in animals)
 
 
+def ask_for_animal_name() -> str:
+    """Ask the user to enter the animal name to look for
+    and return this value.
+    """
+    while True:
+        animal_name = input("Enter a name of an animal: ").strip()
+        if animal_name:
+            break
+        print("Input should not be empty.")
+    return animal_name
+
+
 def ask_for_skin_type(animals):
     """Ask the user to filter the list for a specific skin type."""
     print("Include only animals with the selected skin type.")
@@ -156,11 +168,13 @@ def ask_for_skin_type(animals):
 
 def main():
     """Ask for skin filter and generate HTML file."""
-    # For now using the animal data for the key word 'Fox'
-    animal_name = "Fox"
+    animal_name = ask_for_animal_name()
     animals_data = get_animals(animal_name)
-    skin_type = ask_for_skin_type(animals_data)
-    content = serialize_all_animals_to_html(animals_data, skin_type)
+    if not animals_data and isinstance(animals_data, list):
+        content = f"<h2>The animal '{animal_name}' doesn\'t exist.</h2>"
+    else:
+        skin_type = ask_for_skin_type(animals_data)
+        content = serialize_all_animals_to_html(animals_data, skin_type)
     write_html_file(TEMPLATE_FILE, NEW_FILE, content)
     print("Website was successfully generated to the file animals.html.")
 
