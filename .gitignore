@@ -1,0 +1,8 @@
+# Ignore environment and configuration files
+.env
+
+# Ignore generated html file
+animals.html
+
+# Ignore compiled Python bytecode files
+__pycache__
