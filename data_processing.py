@@ -38,6 +38,8 @@ def get_animal(animal):
     return animal_obj
 
 
-def get_skin_types(animals):
-    """Return a set of all skin types from the given JSON animal data."""
-    return set(animal["characteristics"].get("skin_type", "N/A") for animal in animals)
+def get_skin_types(animals) -> list:
+    """Return all skin types from the given JSON animal data."""
+    skin_types = set(animal["characteristics"].get("skin_type", "N/A") for animal in animals)
+    skin_types_sorted = sorted(skin_types)
+    return skin_types_sorted
