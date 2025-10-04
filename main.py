@@ -40,11 +40,13 @@ def main():
     animals_data = get_animals(animal_name)
     if not animals_data and isinstance(animals_data, list):
         content = f"<h2>The animal '{animal_name}' doesn\'t exist.</h2>"
+    elif animals_data is None:
+        content = f"<h2>There was a problem fetching the data from the API.</h2>"
     else:
         skin_type = ask_for_skin_type(animals_data)
         content = serialize_all_animals_to_html(animals_data, skin_type)
     write_html_file(TEMPLATE_FILE, NEW_FILE, content)
-    print("Website was successfully generated to the file animals.html.")
+    print("Successfully generated the file 'animals.html'.")
 
 
 if __name__ == "__main__":
