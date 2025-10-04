@@ -44,15 +44,6 @@ def get_animal(animal):
     animal_obj = populate_animal_obj(animal)
     return animal_obj
 
-# TODO: remove unused function
-def get_formated_animal(animal_obj):
-    """Return formatted animal basics."""
-    output = "\n".join(f"{key.title()}: {value}"
-                       for key, value
-                       in animal_obj.items()
-                       if value)
-    return output
-
 
 def indent(n):
     """Return n indentations."""
