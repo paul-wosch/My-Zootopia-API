@@ -1,4 +1,4 @@
-# data_processing.py
+"""Process retrieved animal data to standardized animal objects."""
 # Choose here, which fields to display beside animal name from JSON data.
 # Usage: {<field name to display>: (<node>, <nested node>), ...}
 SELECTED_FIELDS = {"diet": ("characteristics", "diet"),
