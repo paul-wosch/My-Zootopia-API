@@ -14,7 +14,7 @@ SELECTED_FIELDS = {"diet": ("characteristics", "diet"),
                    "skin type": ("characteristics", "skin_type")
                    }
 
-
+# TODO: move animal object related function to animal_object.py
 def initialize_animal_obj():
     """Initialize and return preprocessed animal object."""
     animal_obj = {}
@@ -44,7 +44,7 @@ def get_animal(animal):
     animal_obj = populate_animal_obj(animal)
     return animal_obj
 
-
+# TODO: remove unused function
 def get_formated_animal(animal_obj):
     """Return formatted animal basics."""
     output = "\n".join(f"{key.title()}: {value}"
@@ -93,7 +93,7 @@ def serialize_all_animals_to_html(animals, skin_type):
                 output += serialize_animal_to_html(animal_obj) + "\n"
     return output
 
-
+# TODO: move file related functions to 'file_handling.py'
 def load_template(template_file):
     """Load and return html template."""
     with open(template_file, "r", encoding="utf-8") as file_obj:
@@ -116,6 +116,7 @@ def write_html_file(template_file, new_file, content):
 
 def get_skin_types(animals):
     """Return a set of all skin types from the given JSON animal data."""
+    # TODO: add fallback for missing key "skin_type"
     return set(animal["characteristics"]["skin_type"] for animal in animals)
 
 
@@ -149,6 +150,7 @@ def main():
     """Ask for skin filter and generate HTML file."""
     animal_name = ask_for_animal_name()
     animals_data = get_animals(animal_name)
+    print(animals_data)
     if not animals_data and isinstance(animals_data, list):
         content = f"<h2>The animal '{animal_name}' doesn\'t exist.</h2>"
     else:
