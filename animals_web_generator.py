@@ -1,48 +1,11 @@
 """Generate HTML file from API Ninjas Animals API for selected fields."""
 from data_fetcher import get_animals
+from data_processing import get_animal, get_skin_types
 
 TEMPLATE_FILE = "animals_template.html"
 NEW_FILE = "animals.html"
 PLACEHOLDER = "            __REPLACE_ANIMALS_INFO__"
 INDENTATION = "    "
-# Choose here, which fields to display beside animal name from JSON data.
-# Usage: {<field name to display>: (<node>, <nested node>), ...}
-SELECTED_FIELDS = {"diet": ("characteristics", "diet"),
-                   "locations": ("locations",),
-                   "type": ("characteristics", "type"),
-                   "scientific name": ("taxonomy", "scientific_name"),
-                   "skin type": ("characteristics", "skin_type")
-                   }
-
-# TODO: move animal object related function to animal_object.py
-def initialize_animal_obj():
-    """Initialize and return preprocessed animal object."""
-    animal_obj = {}
-    for field in SELECTED_FIELDS:
-        animal_obj[field] = ""
-    return animal_obj
-
-
-def populate_animal_obj(animal):
-    """Return populated animal object."""
-    animal_obj = initialize_animal_obj()
-    keys = list(animal_obj.keys())
-    animal_obj["name"] = animal["name"]
-    # dispatch key names to JSON nodes
-    for key in keys:
-        # treat special case where value is a list like in 'locations'
-        if len(SELECTED_FIELDS[key]) > 1:
-            animal_obj[key] = animal[SELECTED_FIELDS[key][0]].get(SELECTED_FIELDS[key][1], "")
-        else:
-            animal_obj[key] = ", ".join(animal[SELECTED_FIELDS[key][0]])
-
-    return animal_obj
-
-
-def get_animal(animal):
-    """Return name and details for a given animal."""
-    animal_obj = populate_animal_obj(animal)
-    return animal_obj
 
 
 def indent(n):
@@ -79,7 +42,7 @@ def serialize_all_animals_to_html(animals, skin_type):
             output += serialize_animal_to_html(animal_obj) + "\n"
     else:
         for animal in animals:
-            if animal["characteristics"]["skin_type"] == skin_type:
+            if animal["characteristics"].get("skin_type", "N/A") == skin_type:
                 animal_obj = get_animal(animal)
                 output += serialize_animal_to_html(animal_obj) + "\n"
     return output
@@ -103,12 +66,6 @@ def write_html_file(template_file, new_file, content):
     html_template = load_template(template_file)
     html_new = html_template.replace(PLACEHOLDER, content)
     write_file(new_file, html_new)
-
-
-def get_skin_types(animals):
-    """Return a set of all skin types from the given JSON animal data."""
-    # TODO: add fallback for missing key "skin_type"
-    return set(animal["characteristics"]["skin_type"] for animal in animals)
 
 
 def ask_for_animal_name() -> str:
@@ -141,7 +98,6 @@ def main():
     """Ask for skin filter and generate HTML file."""
     animal_name = ask_for_animal_name()
     animals_data = get_animals(animal_name)
-    print(animals_data)
     if not animals_data and isinstance(animals_data, list):
         content = f"<h2>The animal '{animal_name}' doesn\'t exist.</h2>"
     else:
